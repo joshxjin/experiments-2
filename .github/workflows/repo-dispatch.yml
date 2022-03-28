@@ -1,0 +1,59 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Repo Dispatch
+
+on:
+  repository_dispatch:
+    types: [on_demand]
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Trigger
+        run: |
+          echo "Received request from '${{ github.event.client_payload.repository }}'"
+          echo "Test environment: '${{ github.event.client_payload.environment }}'"
+          echo "Return event_type: '${{ github.event.client_payload.return_event_type }}'"
+  
+  do-things:
+    needs: [ trigger ]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: do-things
+        run: |
+          if [ ${{ github.event.client_payload.environment }} == 'development' ]; then
+            exit 0
+          else
+            exit 1
+          fi
+
+  return:
+    needs: [ do-things ]
+    if: always()
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Return Results
+        run: |
+          if [ ${{ github.event.client_payload.return_event_type }} ]; then
+            if [ ${{ needs.job1.result }} != 'success' ]; then
+              RESULT='fail'
+            else
+              RESULT='pass'
+            fi
+          
+            curl -X POST https://api.github.com/repos/${{ github.event.client_payload.repository }}/dispatches \
+            -H 'Accept: application/vnd.github.v3+json' \
+            -H 'Authorization: Bearer ${{ secrets.REPO_DISPATCH_ACT_TRG }}' \
+            --data '{"event_type": "${{ github.event.client_payload.return_event_type }}", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'", "environment": "${{ github.event.client_payload.environment }}", "result": $RESULT }}'
+          fi
+
