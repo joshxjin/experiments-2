@@ -57,4 +57,4 @@ jobs:
           curl -X POST https://api.github.com/repos/${{ github.event.client_payload.repository }}/dispatches \
           -H 'Accept: application/vnd.github.v3+json' \
           -H 'Authorization: Bearer ${{ secrets.PAT }}' \
-          --data '{"event_type": "${{ github.event.client_payload.return_event_type }}", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'", "environment": "${{ github.event.client_payload.environment }}", "result": "'"${{ needs.do_things.result }}"'" }}'
+          --data '{"event_type": "${{ github.event.client_payload.continue_event_type }}", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'", "environment": "${{ github.event.client_payload.environment }}", "result": "'"${{ needs.do_things.result }}"'" }}'
