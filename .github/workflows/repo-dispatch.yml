@@ -4,7 +4,7 @@ name: Repo Dispatch
 
 on:
   repository_dispatch:
-    types: [on_demand]
+    types: [ on-demand ]
 
 jobs:
   trigger:
@@ -28,8 +28,8 @@ jobs:
     steps:
       - name: do-things
         run: |
-          if [ ${{ github.event.client_payload.environment }} == 'development' ]; then
-            exit 0
+          if [ ${{ github.event.client_payload.environment }} == 'production' ]; then
+            exit 1
           else
             exit 0
           fi
@@ -42,13 +42,13 @@ jobs:
       run:
         shell: bash
     steps:
-      # Send repository_dispatch back to repo with event type "e2e_test_result_{environment}" to record result
+      # Send repository_dispatch back to repo with event type "e2e-test-result-{environment}" to record result
       - name: Return Results
         run: |
           curl -X POST https://api.github.com/repos/${{ github.event.client_payload.repository }}/dispatches \
           -H 'Accept: application/vnd.github.v3+json' \
           -H 'Authorization: Bearer ${{ secrets.PAT }}' \
-          --data '{"event_type": "e2e_test_result_${{ github.event.client_payload.environment }}", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'", "environment": "${{ github.event.client_payload.environment }}", "result": "'"${{ needs.do_things.result }}"'" }}'
+          --data '{"event_type": "e2e-test-result-${{ github.event.client_payload.environment }}", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'", "environment": "${{ github.event.client_payload.environment }}", "result": "'"${{ needs.do_things.result }}"'" }}'
 
       # Send an additional repository_dispatch back to repo to continue deployment
       - name: Continue Event
