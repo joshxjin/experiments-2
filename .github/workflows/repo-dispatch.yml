@@ -19,7 +19,7 @@ jobs:
           echo "Test environment: '${{ github.event.client_payload.environment }}'"
           echo "Return event_type: '${{ github.event.client_payload.return_event_type }}'"
   
-  do-things:
+  do_things:
     needs: [ trigger ]
     runs-on: ubuntu-latest
     defaults:
@@ -35,7 +35,7 @@ jobs:
           fi
 
   return:
-    needs: [ do-things ]
+    needs: [ do_things ]
     if: always()
     runs-on: ubuntu-latest
     defaults:
@@ -45,7 +45,7 @@ jobs:
       - name: Return Results
         run: |
           if [ ${{ github.event.client_payload.return_event_type }} ]; then
-            if [ ${{ needs.job1.result }} != 'success' ]; then
+            if [ ${{ needs.do_things.result }} != 'success' ]; then
               RESULT='fail'
             else
               RESULT='pass'
