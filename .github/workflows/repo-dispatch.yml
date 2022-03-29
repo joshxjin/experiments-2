@@ -18,6 +18,7 @@ jobs:
           echo "Received request from '${{ github.event.client_payload.repository }}'"
           echo "Test environment: '${{ github.event.client_payload.environment }}'"
           echo "Continue event_type: '${{ github.event.client_payload.continue_event_type }}'"
+          echo "Link: '${{ github.event.client_payload.link }}'"
   
   do_things:
     needs: [ trigger ]
