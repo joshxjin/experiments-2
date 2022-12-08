@@ -17,10 +17,7 @@ runs:
   steps:
     - name: Checkout Current Project
       uses: actions/checkout@v3
-      env:
-        current_repo: ${GITHUB_REPOSITORY}
       with:
-        repository: ${{ env.current_repo }}
         ref: main
         path: ./source_project
 
