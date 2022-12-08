@@ -1,0 +1,49 @@
+name: "Copy API"
+description: "Copy API"
+
+inputs:
+  source_folder_path:
+    description: 'the source folder to be copied'
+    required: true
+  target_folder_path:
+    description: 'the target parent folder where the source_folder is copied into'
+    required: true
+  ACTIONS_TOKEN:
+    description: 'private account token (pat) to allow committing changes to api repo'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Current Project
+      uses: actions/checkout@v3
+      with:
+        repository: ${GITHUB_REPOSITORY}
+        ref: main
+        path: ./source_project
+
+    # allows checkout the api repo as target
+    - name: Checkout Target Project
+      uses: actions/checkout@v3
+      with:
+        repository: joshxjin/experiments-2
+        token: ${{ inputs.ACTIONS_TOKEN }}
+        path: ./target_project
+
+    - name: Copy/Create file
+      shell: bash
+      run: |
+        cp -R ./source_project/${{ inputs.source_folder_path }} ./target_project/${{ inputs.target_folder_path }}
+
+    # Will fail if there is nothing to commit. There should always something to commit.
+    - name: Push changes
+      shell: bash
+      env:
+        commit_url: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA::7}
+      run: |
+        cd ./target_project
+        git add .
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git commit -am "Updated API spec copied from ${{ env.commit_url }}"
+        git push
