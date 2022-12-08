@@ -15,14 +15,12 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: print var
-      shell: bash
-      run: echo ${GITHUB_REPOSITORY}
-
     - name: Checkout Current Project
       uses: actions/checkout@v3
+      env:
+        current_repo: ${GITHUB_REPOSITORY}
       with:
-        repository: ${GITHUB_REPOSITORY}
+        repository: ${{ env.current_repo }}
         ref: main
         path: ./source_project
 
