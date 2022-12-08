@@ -2,4 +2,4 @@ version: "0.1"
 api:
   endpoint:
     health_check:
-      status_code: 200
+      status_code: 204
