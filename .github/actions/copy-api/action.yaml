@@ -15,6 +15,10 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: print var
+      shell: bash
+      run: echo ${GITHUB_REPOSITORY}
+
     - name: Checkout Current Project
       uses: actions/checkout@v3
       with:
